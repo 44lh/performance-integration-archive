@@ -648,8 +648,24 @@ main { padding-bottom: 36px; }
 .media-metric-label { min-width: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 760; }
 .media-color { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--channel-color); box-shadow: 0 0 0 4px rgba(17,36,45,.055); }
 .media-metric-value { flex: 0 0 auto; color: var(--ink-950); font-size: 11.5px; font-weight: 830; }
-.media-metric-progress { height: 4px; margin-top: 7px; overflow: hidden; border-radius: 999px; background: #e9eef0; }
-.media-metric-progress span { display: block; min-width: 0; height: 100%; border-radius: inherit; background: var(--channel-color); transition: width .28s ease; }
+.media-metric-progress {
+  display: block;
+  width: clamp(64px, 38%, 108px);
+  height: 1px;
+  margin: 4px 0 0 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(17,36,45,.045);
+}
+.media-metric-progress span {
+  display: block;
+  min-width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--channel-color);
+  opacity: .52;
+  transition: width .28s ease;
+}
 .dashboard-empty {
   min-height: 76px;
   display: grid;
@@ -696,16 +712,35 @@ main { padding-bottom: 36px; }
   letter-spacing: .01em;
 }
 
+.channel-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: 9px;
+}
 .channel-card {
+  --channel-accent: var(--brand-500);
   position: relative;
   overflow: hidden;
-  padding: 14px 13px 14px 16px;
+  width: 100%;
+  min-height: 126px;
+  height: 100%;
+  padding: 14px 13px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  appearance: none;
   border: 1px solid var(--line);
   border-radius: 13px;
+  color: inherit;
   background: linear-gradient(145deg, #fff, #f8fbfb);
-  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
-.channel-card + .channel-card { margin-top: 9px; }
 .channel-card::before {
   content: "";
   position: absolute;
@@ -714,7 +749,7 @@ main { padding-bottom: 36px; }
   bottom: 14px;
   width: 3px;
   border-radius: 0 4px 4px 0;
-  background: var(--brand-500);
+  background: var(--channel-accent);
 }
 .channel-card::after {
   content: "";
@@ -724,17 +759,36 @@ main { padding-bottom: 36px; }
   right: -52px;
   top: -54px;
   border-radius: 50%;
+  pointer-events: none;
   background: rgba(25,170,165,.08);
 }
-.channel-card.other-external::before { background: #6b8be5; }
+.channel-card.other-external { --channel-accent: #6b8be5; }
 .channel-card.other-external::after { background: rgba(82,115,217,.095); }
-.channel-card.internal::before { background: var(--amber-500); }
+.channel-card.internal { --channel-accent: var(--amber-500); }
 .channel-card.internal::after { background: rgba(228,164,79,.11); }
-.channel-card.collaboration::before { background: var(--purple-500); }
+.channel-card.collaboration { --channel-accent: var(--purple-500); }
 .channel-card.collaboration::after { background: rgba(152,116,220,.11); }
-.channel-card:hover { transform: translateY(-1px); border-color: #c9d8dd; box-shadow: var(--shadow-xs); }
+.channel-card:hover { transform: translateY(-1px); border-color: var(--channel-accent); background: #fff; box-shadow: var(--shadow-xs); }
+.channel-card:focus-visible { outline: none; border-color: var(--channel-accent); box-shadow: var(--focus), var(--shadow-xs); }
+.channel-card.active { border-color: var(--channel-accent); background: #fff; box-shadow: inset 3px 0 0 var(--channel-accent), var(--shadow-xs); }
+.channel-card > * { position: relative; z-index: 1; }
 .channel-name { margin-bottom: 5px; font-size: 14px; font-weight: 820; }
 .channel-desc { color: var(--ink-600); font-size: 11px; line-height: 1.62; }
+.channel-card-jump {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--channel-accent);
+  font-size: 9.5px;
+  font-weight: 760;
+  opacity: .68;
+  transition: transform .18s ease, opacity .18s ease;
+}
+.channel-card:hover .channel-card-jump,
+.channel-card.active .channel-card-jump {
+  opacity: 1;
+  transform: translateX(2px);
+}
+#articleLibrary { scroll-margin-top: 18px; }
 
 .year-nav { display: flex; flex-wrap: wrap; gap: 7px; }
 .year-chip {
@@ -1676,21 +1730,27 @@ tbody tr:last-child td { border-bottom: 0; }
       <aside class="sidebar">
         <div class="panel panel-pad">
           <h2 class="panel-title">宣传接口 <span style="color:var(--ink-500);font-size:10px;font-weight:550">4 类</span></h2>
-          <div class="channel-card">
-            <div class="channel-name">智绘岚图</div>
-            <div class="channel-desc">面向外部受众，集中展示专业价值、创新实践、项目成果与品牌形象。</div>
-          </div>
-          <div class="channel-card other-external">
-            <div class="channel-name">其余对外宣传接口</div>
-            <div class="channel-desc">归档除“智绘岚图”以外的其他外部传播渠道、媒体平台、专题约稿及品牌传播稿件。</div>
-          </div>
-          <div class="channel-card internal">
-            <div class="channel-name">岚图家园</div>
-            <div class="channel-desc">面向内部员工，记录团队风采、员工故事、组织文化与共同成长。</div>
-          </div>
-          <div class="channel-card collaboration">
-            <div class="channel-name">共同创作</div>
-            <div class="channel-desc">其他专业发布，我们共同参与撰稿。</div>
+          <div class="channel-list" id="channelCardList" aria-label="宣传接口快捷筛选，点击后查看对应稿件">
+            <button class="channel-card" type="button" data-channel-card="智绘岚图" aria-pressed="false">
+              <span class="channel-name">智绘岚图</span>
+              <span class="channel-desc">面向外部受众，集中展示专业价值、创新实践、项目成果与品牌形象。</span>
+              <span class="channel-card-jump">查看对应稿件 →</span>
+            </button>
+            <button class="channel-card other-external" type="button" data-channel-card="其余对外宣传接口" aria-pressed="false">
+              <span class="channel-name">其余对外宣传接口</span>
+              <span class="channel-desc">归档除“智绘岚图”以外的其他外部传播渠道、媒体平台、专题约稿及品牌传播稿件。</span>
+              <span class="channel-card-jump">查看对应稿件 →</span>
+            </button>
+            <button class="channel-card internal" type="button" data-channel-card="岚图家园" aria-pressed="false">
+              <span class="channel-name">岚图家园</span>
+              <span class="channel-desc">面向内部员工，记录团队风采、员工故事、组织文化与共同成长。</span>
+              <span class="channel-card-jump">查看对应稿件 →</span>
+            </button>
+            <button class="channel-card collaboration" type="button" data-channel-card="共同创作" aria-pressed="false">
+              <span class="channel-name">共同创作</span>
+              <span class="channel-desc">其他专业发布，我们共同参与撰稿。</span>
+              <span class="channel-card-jump">查看对应稿件 →</span>
+            </button>
           </div>
         </div>
 
@@ -1705,7 +1765,7 @@ tbody tr:last-child td { border-bottom: 0; }
         </div>
       </aside>
 
-      <div class="content">
+      <div class="content" id="articleLibrary">
         <section class="panel toolbar" aria-label="检索工具">
           <div class="search-row">
             <div class="search-box">
@@ -2013,7 +2073,8 @@ tbody tr:last-child td { border-bottom: 0; }
         topicFilter: $('#topicFilter'), statusFilter: $('#statusFilter'), sortSelect: $('#sortSelect'), resultCount: $('#resultCount'),
         activeFilterText: $('#activeFilterText'), resultArea: $('#resultArea'), gridViewBtn: $('#gridViewBtn'), tableViewBtn: $('#tableViewBtn'),
         editModal: $('#editModal'), authModal: $('#authModal'), detailModal: $('#detailModal'), articleForm: $('#articleForm'), authForm: $('#authForm'),
-        authBtn: $('#authBtn'), addArticleBtn: $('#addArticleBtn'), dataMenuBtn: $('#dataMenuBtn'), dataDropdown: $('#dataDropdown'), importFile: $('#importFile')
+        authBtn: $('#authBtn'), addArticleBtn: $('#addArticleBtn'), dataMenuBtn: $('#dataMenuBtn'), dataDropdown: $('#dataDropdown'), importFile: $('#importFile'),
+        channelCardList: $('#channelCardList'), articleLibrary: $('#articleLibrary')
       };
 
       function isCloudConfigured() {
@@ -2391,9 +2452,31 @@ tbody tr:last-child td { border-bottom: 0; }
         updateFilterOptions();
         elements.channelFilter.value = state.filters.channel;
         updateDashboard();
+        updateChannelCards();
         updateYearNav();
         renderResults();
         updateViewButtons();
+      }
+
+      function updateChannelCards() {
+        if (!elements.channelCardList) return;
+        $$('[data-channel-card]', elements.channelCardList).forEach(button => {
+          const active = state.filters.channel === button.dataset.channelCard;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        syncChannelCardHeights();
+      }
+
+      function syncChannelCardHeights() {
+        if (!elements.channelCardList) return;
+        const cards = $$('[data-channel-card]', elements.channelCardList);
+        if (!cards.length) return;
+        cards.forEach(card => { card.style.height = 'auto'; });
+        requestAnimationFrame(() => {
+          const maxHeight = Math.max(...cards.map(card => Math.ceil(card.scrollHeight)));
+          cards.forEach(card => { card.style.height = `${maxHeight}px`; });
+        });
       }
 
       function updateDashboard() {
@@ -3003,6 +3086,22 @@ tbody tr:last-child td { border-bottom: 0; }
         const channel = button.dataset.dashboardChannel || '';
         state.filters.channel = state.filters.channel === channel ? '' : channel;
         renderAll();
+      });
+      let channelCardResizeTimer = null;
+      window.addEventListener('resize', () => {
+        window.clearTimeout(channelCardResizeTimer);
+        channelCardResizeTimer = window.setTimeout(syncChannelCardHeights, 120);
+      });
+      document.fonts?.ready.then(syncChannelCardHeights).catch(() => {});
+
+      elements.channelCardList?.addEventListener('click', event => {
+        const button = event.target.closest('[data-channel-card]');
+        if (!button) return;
+        state.filters.channel = button.dataset.channelCard || '';
+        renderAll();
+        requestAnimationFrame(() => {
+          elements.articleLibrary?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
       });
       elements.dashboardResetBtn.addEventListener('click', () => {
         state.filters.year = '';
