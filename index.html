@@ -2908,13 +2908,6 @@ tbody tr:last-child td { border-bottom: 0; }
         return formatMetricNumber(article.readCount);
       }
 
-      function formatMetricTime(value) {
-        if (!value) return '尚未同步';
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return String(value);
-        return date.toLocaleString('zh-CN', { hour12: false });
-      }
-
       function emptyStateMarkup(filtered) {
         const emptyActions = filtered
           ? '<button class="btn btn-light" type="button" data-action="clear-filters">重置筛选</button>'
@@ -2944,11 +2937,11 @@ tbody tr:last-child td { border-bottom: 0; }
               <time class="article-date" datetime="${escapeHTML(article.date)}">${escapeHTML(formatDate(article.date))}</time>
             </div>
             <h3 class="article-title"><button class="article-title-button" type="button" data-action="detail" data-id="${escapeHTML(article.id)}">${escapeHTML(article.title)}</button></h3>
-            <p class="article-summary">${escapeHTML(article.summary || '暂未填写摘要，可在稿件详情中补充核心内容与传播亮点。')}</p>
+            ${article.summary ? `<p class="article-summary">${escapeHTML(article.summary)}</p>` : ''}
             <div class="article-tags">${tags.map(tag => `<span class="tag"># ${escapeHTML(tag)}</span>`).join('')}</div>
             <div class="article-footer">
               <div class="article-footer-left">
-                <span class="article-metric ${article.readCount == null && !article.readCountDisplay ? 'empty' : ''}" title="最近同步：${escapeHTML(formatMetricTime(article.metricsUpdatedAt))}">◉ 阅读 ${escapeHTML(readMetricLabel(article))}</span>
+                <span class="article-metric ${article.readCount == null && !article.readCountDisplay ? 'empty' : ''}">◉ 阅读 ${escapeHTML(readMetricLabel(article))}</span>
                 <span class="article-byline" title="${escapeHTML(byline)}">${escapeHTML(byline)}</span>
               </div>
               <button class="article-open" type="button" data-action="detail" data-id="${escapeHTML(article.id)}">查看详情 →</button>
@@ -3116,11 +3109,12 @@ tbody tr:last-child td { border-bottom: 0; }
             <div class="detail-meta-item"><span>主题分类</span><strong>${escapeHTML(article.topic || '待补充')}</strong></div>
             ${authorDetailMarkup(article)}
             <div class="detail-meta-item"><span>关键词</span><strong>${escapeHTML((article.keywords || []).join('、') || '待补充')}</strong></div>
-            <div class="detail-meta-item"><span>阅读量</span><strong>${escapeHTML(readMetricLabel(article))}</strong><small>更新于 ${escapeHTML(formatMetricTime(article.metricsUpdatedAt))}</small></div>
+            <div class="detail-meta-item"><span>阅读量</span><strong>${escapeHTML(readMetricLabel(article))}</strong></div>
             <div class="detail-meta-item"><span>资料链接</span><strong>${article.link ? (url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">打开链接 ↗</a>` : escapeHTML(article.link)) : '待补充'}</strong></div>
           </div>
+          ${article.summary ? `
           <h3 style="font-size:14px;margin:0 0 8px">稿件摘要</h3>
-          <div class="detail-summary">${escapeHTML(article.summary || '暂未填写摘要。')}</div>
+          <div class="detail-summary">${escapeHTML(article.summary)}</div>` : ''}
           ${article.notes ? `<div class="detail-notes"><strong style="display:block;color:var(--ink-800);margin-bottom:5px">备注</strong>${escapeHTML(article.notes)}</div>` : ''}
         `;
         $('#detailActions').innerHTML = isEditor() ? `
