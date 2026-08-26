@@ -1984,9 +1984,10 @@ tbody tr:last-child td { border-bottom: 0; }
                 <option value="草稿">草稿</option>
                 <option value="已归档">已归档</option>
               </select>
-              <select class="control" id="sortSelect" aria-label="排序方式" style="height:36px;width:auto;min-width:126px;font-size:12px">
+              <select class="control" id="sortSelect" aria-label="排序方式" title="阅读量排序会将未录入或未同步阅读量的稿件放在末尾" style="height:36px;width:auto;min-width:150px;font-size:12px">
                 <option value="date-desc">时间：从新到旧</option>
                 <option value="date-asc">时间：从旧到新</option>
+                <option value="read-desc">阅读量：从高到低</option>
                 <option value="title-asc">标题：A–Z</option>
                 <option value="featured">重点稿件优先</option>
               </select>
@@ -2841,6 +2842,15 @@ tbody tr:last-child td { border-bottom: 0; }
         return list.sort((a, b) => {
           switch (state.filters.sort) {
             case 'date-asc': return (a.date || '9999').localeCompare(b.date || '9999');
+            case 'read-desc': {
+              const aRead = articleReadValue(a);
+              const bRead = articleReadValue(b);
+              const aHasRead = aRead !== null;
+              const bHasRead = bRead !== null;
+              if (aHasRead !== bHasRead) return aHasRead ? -1 : 1;
+              if (aHasRead && bHasRead && aRead !== bRead) return bRead - aRead;
+              return (b.date || '').localeCompare(a.date || '') || a.title.localeCompare(b.title, 'zh-CN');
+            }
             case 'title-asc': return a.title.localeCompare(b.title, 'zh-CN');
             case 'featured': return Number(b.featured) - Number(a.featured) || (b.date || '').localeCompare(a.date || '');
             case 'date-desc':
@@ -3540,5 +3550,6 @@ tbody tr:last-child td { border-bottom: 0; }
       initApplication();
     })();
   </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
 </body>
 </html>
