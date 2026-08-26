@@ -412,7 +412,7 @@ main { padding-bottom: 36px; }
   position: relative;
   z-index: 4;
   display: grid;
-  grid-template-columns: minmax(0, 1.38fr) minmax(360px, .62fr);
+  grid-template-columns: minmax(330px, 1.18fr) repeat(2, minmax(300px, .91fr));
   gap: 14px;
   margin-top: -51px;
 }
@@ -429,6 +429,7 @@ main { padding-bottom: 36px; }
   animation: riseIn .46s both;
 }
 .dashboard-panel:nth-child(2) { animation-delay: .055s; }
+.dashboard-panel:nth-child(3) { animation-delay: .10s; }
 .dashboard-panel::after {
   content: "";
   position: absolute;
@@ -441,6 +442,7 @@ main { padding-bottom: 36px; }
   background: rgba(25,170,165,.045);
 }
 .dashboard-media-panel::after { background: rgba(125,91,194,.045); }
+.dashboard-read-panel::after { background: rgba(82,115,217,.05); }
 
 .dashboard-panel-head {
   position: relative;
@@ -474,6 +476,36 @@ main { padding-bottom: 36px; }
   letter-spacing: .08em;
 }
 .dashboard-media-panel .dashboard-kicker { color: var(--purple-600); }
+.dashboard-read-panel .dashboard-kicker { color: #5273d9; }
+.dashboard-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dashboard-scope-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 23px;
+  padding: 3px 8px;
+  border: 1px solid #dbe5e9;
+  border-radius: 999px;
+  color: var(--ink-600);
+  background: #f7fafb;
+  font-size: 9px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+.dashboard-media-panel .dashboard-scope-chip {
+  color: var(--purple-600);
+  border-color: rgba(152,116,220,.20);
+  background: rgba(152,116,220,.07);
+}
+.dashboard-read-panel .dashboard-scope-chip {
+  color: #4867c7;
+  border-color: rgba(82,115,217,.20);
+  background: rgba(82,115,217,.07);
+}
 .dashboard-reset {
   flex: 0 0 auto;
   min-height: 32px;
@@ -596,15 +628,15 @@ main { padding-bottom: 36px; }
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 142px minmax(0, 1fr);
+  grid-template-columns: 116px minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   min-height: 230px;
 }
 .media-donut {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 116px;
+  height: 116px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -615,7 +647,7 @@ main { padding-bottom: 36px; }
 .media-donut::after {
   content: "";
   position: absolute;
-  inset: 24px;
+  inset: 20px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 0 0 1px var(--line-soft), 0 8px 18px rgba(7,33,44,.06);
@@ -629,7 +661,18 @@ main { padding-bottom: 36px; }
   font-weight: 860;
   letter-spacing: -.04em;
 }
-.media-donut-center span { display: block; margin-top: 6px; color: var(--ink-500); font-size: 9.5px; }
+.media-donut-center span { display: block; margin-top: 5px; color: var(--ink-500); font-size: 9px; }
+.media-donut-center em {
+  display: inline-flex;
+  margin-top: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--purple-600);
+  background: rgba(152,116,220,.08);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 760;
+}
 .media-dashboard { display: grid; gap: 7px; min-width: 0; }
 .media-metric {
   --channel-color: var(--brand-500);
@@ -666,6 +709,100 @@ main { padding-bottom: 36px; }
   opacity: .52;
   transition: width .28s ease;
 }
+
+.read-dashboard {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  min-height: 230px;
+}
+.read-total-card {
+  min-width: 0;
+  padding: 15px 16px;
+  border: 1px solid rgba(82,115,217,.16);
+  border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #3858b5, #6e8be8);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 10px 24px rgba(82,115,217,.15);
+}
+.read-total-card span,
+.read-stat-card span {
+  display: block;
+  font-size: 10px;
+  font-weight: 740;
+}
+.read-total-card span { color: rgba(255,255,255,.76); }
+.read-total-card strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 29px;
+  line-height: 1;
+  font-weight: 860;
+  letter-spacing: -.035em;
+  word-break: break-all;
+}
+.read-total-card small {
+  display: block;
+  margin-top: 7px;
+  color: rgba(255,255,255,.70);
+  font-size: 8.8px;
+  line-height: 1.45;
+}
+.read-split-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.read-stat-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fff, #f8fafc);
+}
+.read-stat-card.external { box-shadow: inset 3px 0 0 rgba(25,170,165,.66); }
+.read-stat-card.internal { box-shadow: inset 3px 0 0 rgba(228,164,79,.72); }
+.read-stat-card span { color: var(--ink-500); }
+.read-stat-card strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--ink-950);
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 840;
+  letter-spacing: -.025em;
+  word-break: break-all;
+}
+.read-stat-card small {
+  display: block;
+  margin-top: 7px;
+  color: var(--ink-400);
+  font-size: 8px;
+  line-height: 1.45;
+}
+.read-audience-track {
+  display: flex;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf1f3;
+}
+.read-audience-track span { min-width: 0; height: 100%; transition: width .28s ease; }
+.read-audience-track .external { background: linear-gradient(90deg, var(--brand-500), #59c8c1); }
+.read-audience-track .internal { background: linear-gradient(90deg, var(--amber-500), #f2c276); }
+.read-dashboard-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ink-500);
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+.read-dashboard-foot strong { color: var(--ink-700); font-weight: 760; }
+
 .dashboard-empty {
   min-height: 76px;
   display: grid;
@@ -1028,6 +1165,9 @@ textarea.control { min-height: 112px; height: auto; padding-top: 10px; padding-b
   border-top: 1px solid var(--line-soft);
 }
 .article-byline { min-width: 0; color: var(--ink-500); font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.article-footer-left { min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+.article-metric { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border: 1px solid #dfeaec; border-radius: 999px; color: var(--brand-700); background: var(--brand-50); font-size: 9.5px; font-weight: 760; white-space: nowrap; }
+.article-metric.empty { color: var(--ink-500); background: #f4f7f8; }
 .article-open {
   flex: 0 0 auto;
   border: 0;
@@ -1243,6 +1383,15 @@ tbody tr:last-child td { border-bottom: 0; }
   color: var(--ink-500);
   font-size: 9.5px;
   font-weight: 450;
+}
+.author-builder.is-optional {
+  border-color: rgba(152,116,220,.23);
+  background: linear-gradient(145deg, rgba(152,116,220,.055), #f8fafb);
+}
+.author-builder.is-optional .author-builder-note { color: var(--purple-600); }
+.author-builder.is-optional .author-index {
+  color: var(--purple-600);
+  background: rgba(152,116,220,.10);
 }
 
 .author-count-wrap {
@@ -1504,7 +1653,9 @@ tbody tr:last-child td { border-bottom: 0; }
 @media (max-width: 1120px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr) 330px; gap: 38px; }
   .overview-dashboard { grid-template-columns: 1fr; }
-  .dashboard-media-body { grid-template-columns: 160px minmax(0, 1fr); min-height: 190px; }
+  .dashboard-media-body { grid-template-columns: 145px minmax(0, 1fr); min-height: 190px; }
+  .media-donut { width: 132px; height: 132px; }
+  .read-dashboard { min-height: auto; }
   .workspace { grid-template-columns: 250px minmax(0, 1fr); }
   .search-row { grid-template-columns: minmax(240px, 1.45fr) repeat(3, minmax(118px, .72fr)); }
 }
@@ -1543,6 +1694,7 @@ tbody tr:last-child td { border-bottom: 0; }
   .dashboard-primary { grid-column: 1 / -1; }
   .dashboard-media-body { grid-template-columns: 140px minmax(0, 1fr); gap: 14px; }
   .media-donut { width: 132px; height: 132px; }
+  .read-split-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sidebar { grid-template-columns: 1fr; }
   .sidebar .privacy-note { grid-column: auto; }
   .cards-grid { grid-template-columns: 1fr; }
@@ -1577,6 +1729,8 @@ tbody tr:last-child td { border-bottom: 0; }
   .dashboard-summary { grid-template-columns: 1fr 1fr; }
   .dashboard-media-body { grid-template-columns: 1fr; justify-items: center; }
   .media-dashboard { width: 100%; }
+  .read-split-grid { grid-template-columns: 1fr; }
+  .read-dashboard-foot { flex-direction: column; }
   .year-metric { grid-template-columns: 45px minmax(70px, 1fr) 30px; gap: 7px; }
   .search-row { grid-template-columns: 1fr; }
   .search-box { grid-column: auto; }
@@ -1614,6 +1768,7 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
   </style>
+  <!-- v6：共同创作作者可选 + 年份联动宣传媒介/阅读量看板 -->
 </head>
 <body>
   <noscript><div style="margin:16px;padding:14px;border:1px solid #f0c36d;border-radius:12px;background:#fff8e6;color:#7a5200;font-family:Microsoft YaHei,Arial,sans-serif">当前预览环境未执行 JavaScript，因此只能显示静态页面。请下载后用浏览器打开，或发布到飞书妙搭。</div></noscript>
@@ -1687,7 +1842,7 @@ tbody tr:last-child td { border-bottom: 0; }
         </div>
         <div class="dashboard-summary">
           <div class="dashboard-primary">
-            <span>已收录稿件</span>
+            <span id="dashboardTotalLabel">已收录稿件</span>
             <strong id="dashboardTotal">0</strong>
             <small id="dashboardLatest">等待云端数据</small>
           </div>
@@ -1711,16 +1866,53 @@ tbody tr:last-child td { border-bottom: 0; }
         <div class="dashboard-panel-head">
           <div>
             <span class="dashboard-kicker">宣传稿类别</span>
-            <h2>宣传媒介构成</h2>
+            <div class="dashboard-title-line"><h2>宣传媒介构成</h2><span class="dashboard-scope-chip" id="mediaScopeYear">全部年份</span></div>
             <p>按四类宣传媒介统计，点击类别可筛选下方稿件。</p>
           </div>
         </div>
         <div class="dashboard-media-body">
           <div class="media-donut" id="mediaDonut" aria-label="宣传媒介占比">
-            <div class="media-donut-center"><strong id="mediaDonutTotal">0</strong><span>篇稿件</span></div>
+            <div class="media-donut-center"><strong id="mediaDonutTotal">0</strong><span>篇稿件</span><em id="mediaDonutYear">全部年份</em></div>
           </div>
           <div class="media-dashboard" id="mediaDashboard" aria-label="宣传媒介统计">
             <div class="dashboard-empty">暂无媒介数据</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dashboard-panel dashboard-read-panel">
+        <div class="dashboard-panel-head">
+          <div>
+            <span class="dashboard-kicker">公众号阅读数据</span>
+            <div class="dashboard-title-line"><h2>阅读量概览</h2><span class="dashboard-scope-chip" id="readScopeYear">全部年份</span></div>
+            <p>总阅读量按已同步稿件汇总；对外与对内口径按宣传媒介自动归类。</p>
+          </div>
+        </div>
+        <div class="read-dashboard">
+          <div class="read-total-card">
+            <span>总阅读量</span>
+            <strong id="readTotal">0</strong>
+            <small id="readCoverage">已同步 0 / 0 篇；未同步稿件不计入合计</small>
+          </div>
+          <div class="read-split-grid">
+            <div class="read-stat-card external">
+              <span>对外宣传阅读量</span>
+              <strong id="readExternal">0</strong>
+              <small>智绘岚图 / 其余对外宣传接口 / 共同创作</small>
+            </div>
+            <div class="read-stat-card internal">
+              <span>对内宣传阅读量</span>
+              <strong id="readInternal">0</strong>
+              <small>岚图家园</small>
+            </div>
+          </div>
+          <div class="read-audience-track" aria-label="对外与对内阅读量占比">
+            <span class="external" id="readExternalBar" style="width:0%"></span>
+            <span class="internal" id="readInternalBar" style="width:0%"></span>
+          </div>
+          <div class="read-dashboard-foot">
+            <span id="readScopeText"><strong>统计范围：</strong>全部年份</span>
+            <span>阅读量由同步脚本写入云端</span>
           </div>
         </div>
       </article>
@@ -1867,15 +2059,16 @@ tbody tr:last-child td { border-bottom: 0; }
                 <option value="已归档">已归档</option>
               </select>
             </div>
-            <div class="form-field full author-builder">
+            <div class="form-field full author-builder" id="authorBuilder">
               <div class="author-builder-head">
                 <div>
                   <span class="author-builder-title">撰稿作者与所属专业</span>
-                  <span class="author-builder-note">每位作者均可独立选择专业；先选择作者人数，再分别填写姓名和所属专业。</span>
+                  <span class="author-builder-note" id="authorRequirementNote">除“共同创作”外，必须至少登记第一作者，并为每位作者选择所属专业。</span>
                 </div>
                 <label class="author-count-wrap" for="authorCountInput">
                   <span>作者人数</span>
                   <select class="control author-count-control" id="authorCountInput">
+                    <option value="0" id="authorCountZeroOption" hidden disabled>不登记作者（共同创作可选）</option>
                     <option value="1">1 位作者</option>
                     <option value="2">2 位作者</option>
                     <option value="3">3 位作者</option>
@@ -2035,6 +2228,7 @@ tbody tr:last-child td { border-bottom: 0; }
         { name: '岚图家园', className: 'internal', color: '#e4a44f' },
         { name: '共同创作', className: 'collaboration', color: '#9874dc' }
       ]);
+      const EXTERNAL_CHANNELS = new Set(['智绘岚图', '其余对外宣传接口', '共同创作']);
 
       // 在 Supabase 项目设置的 API 页面复制这两项，再替换下方占位符。
       // publishable / anon key 可以放在浏览器端，但必须配合随附 SQL 开启 RLS。
@@ -2067,14 +2261,16 @@ tbody tr:last-child td { border-bottom: 0; }
       const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
       const elements = {
-        dashboardTotal: $('#dashboardTotal'), dashboardLatest: $('#dashboardLatest'), dashboardYearCount: $('#dashboardYearCount'),
-        yearDashboard: $('#yearDashboard'), mediaDonut: $('#mediaDonut'), mediaDonutTotal: $('#mediaDonutTotal'), mediaDashboard: $('#mediaDashboard'), dashboardResetBtn: $('#dashboardResetBtn'),
+        dashboardTotalLabel: $('#dashboardTotalLabel'), dashboardTotal: $('#dashboardTotal'), dashboardLatest: $('#dashboardLatest'), dashboardYearCount: $('#dashboardYearCount'),
+        yearDashboard: $('#yearDashboard'), mediaDonut: $('#mediaDonut'), mediaDonutTotal: $('#mediaDonutTotal'), mediaDonutYear: $('#mediaDonutYear'), mediaScopeYear: $('#mediaScopeYear'), mediaDashboard: $('#mediaDashboard'), dashboardResetBtn: $('#dashboardResetBtn'),
+        readScopeYear: $('#readScopeYear'), readTotal: $('#readTotal'), readExternal: $('#readExternal'), readInternal: $('#readInternal'), readCoverage: $('#readCoverage'), readExternalBar: $('#readExternalBar'), readInternalBar: $('#readInternalBar'), readScopeText: $('#readScopeText'),
         syncTime: $('#syncTime'), cloudState: $('#cloudState'), yearNav: $('#yearNav'), searchInput: $('#searchInput'), yearFilter: $('#yearFilter'), channelFilter: $('#channelFilter'),
         topicFilter: $('#topicFilter'), statusFilter: $('#statusFilter'), sortSelect: $('#sortSelect'), resultCount: $('#resultCount'),
         activeFilterText: $('#activeFilterText'), resultArea: $('#resultArea'), gridViewBtn: $('#gridViewBtn'), tableViewBtn: $('#tableViewBtn'),
         editModal: $('#editModal'), authModal: $('#authModal'), detailModal: $('#detailModal'), articleForm: $('#articleForm'), authForm: $('#authForm'),
         authBtn: $('#authBtn'), addArticleBtn: $('#addArticleBtn'), dataMenuBtn: $('#dataMenuBtn'), dataDropdown: $('#dataDropdown'), importFile: $('#importFile'),
-        channelCardList: $('#channelCardList'), articleLibrary: $('#articleLibrary')
+        channelCardList: $('#channelCardList'), articleLibrary: $('#articleLibrary'),
+        channelInput: $('#channelInput'), authorBuilder: $('#authorBuilder'), authorRequirementNote: $('#authorRequirementNote'), authorCountInput: $('#authorCountInput'), authorCountZeroOption: $('#authorCountZeroOption')
       };
 
       function isCloudConfigured() {
@@ -2129,6 +2325,15 @@ tbody tr:last-child td { border-bottom: 0; }
           link: row.link,
           notes: row.notes,
           featured: row.featured,
+          readCount: row.read_count,
+          readCountDisplay: row.read_count_display,
+          readUserCount: row.read_user_count,
+          shareCount: row.share_count,
+          favoriteCount: row.favorite_count,
+          metricsSource: row.metrics_source,
+          metricsStatus: row.metrics_status,
+          metricsUpdatedAt: row.metrics_updated_at,
+          wechatMsgid: row.wechat_msgid,
           createdAt: row.created_at,
           updatedAt: row.updated_at
         });
@@ -2327,6 +2532,15 @@ tbody tr:last-child td { border-bottom: 0; }
           link: String(input.link || input['稿件链接'] || input['链接'] || input['文件路径'] || '').trim(),
           notes: String(input.notes || input['备注'] || '').trim(),
           featured: toBoolean(input.featured ?? input['重点稿件'] ?? false),
+          readCount: input.readCount ?? input.read_count ?? input['阅读量'] ?? null,
+          readCountDisplay: String(input.readCountDisplay ?? input.read_count_display ?? '').trim(),
+          readUserCount: input.readUserCount ?? input.read_user_count ?? null,
+          shareCount: input.shareCount ?? input.share_count ?? null,
+          favoriteCount: input.favoriteCount ?? input.favorite_count ?? null,
+          metricsSource: String(input.metricsSource ?? input.metrics_source ?? '').trim(),
+          metricsStatus: String(input.metricsStatus ?? input.metrics_status ?? '').trim(),
+          metricsUpdatedAt: input.metricsUpdatedAt ?? input.metrics_updated_at ?? '',
+          wechatMsgid: String(input.wechatMsgid ?? input.wechat_msgid ?? '').trim(),
           createdAt: input.createdAt || new Date().toISOString(),
           updatedAt: input.updatedAt || new Date().toISOString()
         };
@@ -2392,7 +2606,9 @@ tbody tr:last-child td { border-bottom: 0; }
         const roleLabels = ['第一作者', '第二作者', '第三作者'];
         const authors = articleAuthors(article);
         if (!authors.length) {
-          return '<div class="detail-meta-item"><span>撰稿作者</span><strong>待补充</strong><small>专业待补充</small></div>';
+          return article.channel === '共同创作'
+            ? '<div class="detail-meta-item"><span>撰稿作者</span><strong>不要求登记</strong><small>其他专业发布，我们共同参与撰稿</small></div>'
+            : '<div class="detail-meta-item"><span>撰稿作者</span><strong>待补充</strong><small>专业待补充</small></div>';
         }
         return authors.map((author, index) => `
           <div class="detail-meta-item">
@@ -2479,25 +2695,59 @@ tbody tr:last-child td { border-bottom: 0; }
         });
       }
 
+      function parseMetricValue(value) {
+        if (value === null || value === undefined || value === '') return null;
+        if (typeof value === 'number') return Number.isFinite(value) && value >= 0 ? value : null;
+        const text = String(value).trim().replace(/,/g, '').replace(/＋/g, '+');
+        const match = text.match(/(\d+(?:\.\d+)?)\s*([万wW]?)\s*\+?/);
+        if (!match) return null;
+        let number = Number(match[1]);
+        if (!Number.isFinite(number) || number < 0) return null;
+        if (['万', 'w'].includes(match[2].toLowerCase())) number *= 10000;
+        return Math.round(number);
+      }
+
+      function articleReadValue(article = {}) {
+        return parseMetricValue(article.readCount) ?? parseMetricValue(article.readCountDisplay);
+      }
+
+      function formatDashboardNumber(value) {
+        const number = Number(value) || 0;
+        return number.toLocaleString('zh-CN');
+      }
+
       function updateDashboard() {
-        const total = state.articles.length;
-        const years = uniqueSorted(state.articles.map(getYear).filter(year => year !== '待补充'), true);
+        const allArticles = state.articles;
+        const years = uniqueSorted(allArticles.map(getYear).filter(year => year !== '待补充'), true);
+        const selectedYear = state.filters.year;
+        const scopeArticles = selectedYear
+          ? allArticles.filter(article => getYear(article) === selectedYear)
+          : allArticles;
+        const scopeLabel = selectedYear ? `${selectedYear}年` : '全部年份';
+        const total = scopeArticles.length;
         const yearStats = years.map(year => ({
           year,
-          count: state.articles.filter(article => getYear(article) === year).length
+          count: allArticles.filter(article => getYear(article) === year).length
         }));
         const maxYearCount = Math.max(1, ...yearStats.map(item => item.count));
 
+        elements.dashboardTotalLabel.textContent = selectedYear ? `${selectedYear}年稿件` : '已收录稿件';
         elements.dashboardTotal.textContent = total;
         elements.dashboardYearCount.textContent = years.length;
-        elements.dashboardLatest.textContent = total ? `最近更新：${latestDateLabel()}` : '等待导入资料';
+        elements.dashboardLatest.textContent = selectedYear
+          ? `当前统计范围：${scopeLabel}`
+          : total ? `最近更新：${latestDateLabel()}` : '等待导入资料';
         elements.mediaDonutTotal.textContent = total;
+        elements.mediaDonutYear.textContent = scopeLabel;
+        elements.mediaScopeYear.textContent = scopeLabel;
+        elements.readScopeYear.textContent = scopeLabel;
+        elements.readScopeText.innerHTML = `<strong>统计范围：</strong>${escapeHTML(scopeLabel)}`;
         elements.dashboardResetBtn.disabled = !(state.filters.year || state.filters.channel);
 
         elements.yearDashboard.innerHTML = yearStats.length
           ? yearStats.map(item => {
               const width = Math.max(7, (item.count / maxYearCount) * 100);
-              const active = state.filters.year === item.year;
+              const active = selectedYear === item.year;
               return `<button class="year-metric ${active ? 'active' : ''}" type="button" data-dashboard-year="${escapeHTML(item.year)}" aria-pressed="${active}">
                 <span class="year-metric-year">${escapeHTML(item.year)}</span>
                 <span class="year-bar-track"><span class="year-bar-fill" style="width:${width.toFixed(2)}%"></span></span>
@@ -2508,13 +2758,13 @@ tbody tr:last-child td { border-bottom: 0; }
 
         const mediaStats = CHANNELS.map(item => ({
           ...item,
-          count: state.articles.filter(article => article.channel === item.name).length
+          count: scopeArticles.filter(article => article.channel === item.name).length
         }));
         let offset = 0;
         const segments = mediaStats.filter(item => item.count > 0).map(item => {
-          const start = offset;
+          const segmentStart = offset;
           offset += total ? (item.count / total) * 100 : 0;
-          return `${item.color} ${start.toFixed(2)}% ${offset.toFixed(2)}%`;
+          return `${item.color} ${segmentStart.toFixed(2)}% ${offset.toFixed(2)}%`;
         });
         elements.mediaDonut.style.background = total && segments.length
           ? `conic-gradient(${segments.join(', ')})`
@@ -2530,6 +2780,26 @@ tbody tr:last-child td { border-bottom: 0; }
             <span class="media-metric-progress"><span style="width:${percent}%"></span></span>
           </button>`;
         }).join('');
+
+        const metricArticles = scopeArticles
+          .map(article => ({ article, value: articleReadValue(article) }))
+          .filter(item => item.value !== null);
+        const totalReads = metricArticles.reduce((sum, item) => sum + item.value, 0);
+        const externalReads = metricArticles
+          .filter(item => EXTERNAL_CHANNELS.has(item.article.channel))
+          .reduce((sum, item) => sum + item.value, 0);
+        const internalReads = metricArticles
+          .filter(item => item.article.channel === '岚图家园')
+          .reduce((sum, item) => sum + item.value, 0);
+        const externalPercent = totalReads ? (externalReads / totalReads) * 100 : 0;
+        const internalPercent = totalReads ? (internalReads / totalReads) * 100 : 0;
+
+        elements.readTotal.textContent = formatDashboardNumber(totalReads);
+        elements.readExternal.textContent = formatDashboardNumber(externalReads);
+        elements.readInternal.textContent = formatDashboardNumber(internalReads);
+        elements.readCoverage.textContent = `已同步 ${metricArticles.length} / ${scopeArticles.length} 篇；未同步稿件不计入合计`;
+        elements.readExternalBar.style.width = `${externalPercent.toFixed(2)}%`;
+        elements.readInternalBar.style.width = `${internalPercent.toFixed(2)}%`;
       }
 
       function latestDateLabel() {
@@ -2615,6 +2885,26 @@ tbody tr:last-child td { border-bottom: 0; }
       }
 
 
+      function formatMetricNumber(value) {
+        if (value === null || value === undefined || value === '') return '待同步';
+        const number = Number(value);
+        if (!Number.isFinite(number) || number < 0) return '待同步';
+        return number.toLocaleString('zh-CN');
+      }
+
+      function readMetricLabel(article) {
+        const display = String(article.readCountDisplay || '').trim();
+        if (display) return display;
+        return formatMetricNumber(article.readCount);
+      }
+
+      function formatMetricTime(value) {
+        if (!value) return '尚未同步';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleString('zh-CN', { hour12: false });
+      }
+
       function emptyStateMarkup(filtered) {
         const emptyActions = filtered
           ? '<button class="btn btn-light" type="button" data-action="clear-filters">重置筛选</button>'
@@ -2632,7 +2922,7 @@ tbody tr:last-child td { border-bottom: 0; }
       function cardsMarkup(list) {
         return `<div class="cards-grid">${list.map(article => {
           const articleChannelClass = channelClass(article.channel);
-          const byline = authorsLabel(article) || '撰稿信息待补充';
+          const byline = authorsLabel(article) || (article.channel === '共同创作' ? '其他专业发布 · 作者不登记' : '撰稿信息待补充');
           const tags = [article.topic, ...(article.keywords || [])].filter(Boolean).slice(0, 5);
           return `<article class="article-card ${articleChannelClass}">
             <div class="article-head">
@@ -2647,7 +2937,10 @@ tbody tr:last-child td { border-bottom: 0; }
             <p class="article-summary">${escapeHTML(article.summary || '暂未填写摘要，可在稿件详情中补充核心内容与传播亮点。')}</p>
             <div class="article-tags">${tags.map(tag => `<span class="tag"># ${escapeHTML(tag)}</span>`).join('')}</div>
             <div class="article-footer">
-              <span class="article-byline" title="${escapeHTML(byline)}">${escapeHTML(byline)}</span>
+              <div class="article-footer-left">
+                <span class="article-metric ${article.readCount == null && !article.readCountDisplay ? 'empty' : ''}" title="最近同步：${escapeHTML(formatMetricTime(article.metricsUpdatedAt))}">◉ 阅读 ${escapeHTML(readMetricLabel(article))}</span>
+                <span class="article-byline" title="${escapeHTML(byline)}">${escapeHTML(byline)}</span>
+              </div>
               <button class="article-open" type="button" data-action="detail" data-id="${escapeHTML(article.id)}">查看详情 →</button>
             </div>
           </article>`;
@@ -2656,13 +2949,14 @@ tbody tr:last-child td { border-bottom: 0; }
 
       function tableMarkup(list) {
         return `<div class="table-wrap"><table>
-          <thead><tr><th>发布日期</th><th>标题</th><th>栏目</th><th>主题</th><th>状态</th><th>作者 / 专业</th><th>操作</th></tr></thead>
+          <thead><tr><th>发布日期</th><th>标题</th><th>栏目</th><th>主题</th><th>状态</th><th>阅读量</th><th>作者 / 专业</th><th>操作</th></tr></thead>
           <tbody>${list.map(article => `<tr>
             <td>${escapeHTML(formatDate(article.date))}</td>
             <td class="table-title"><button type="button" data-action="detail" data-id="${escapeHTML(article.id)}">${article.featured ? '★ ' : ''}${escapeHTML(article.title)}</button></td>
             <td><span class="badge ${channelClass(article.channel)}">${escapeHTML(article.channel)}</span></td>
             <td>${escapeHTML(article.topic)}</td>
             <td><span class="badge status ${statusClass(article.status)}">${escapeHTML(article.status)}</span></td>
+            <td>${escapeHTML(readMetricLabel(article))}</td>
             <td>${escapeHTML(authorsLabel(article) || '—')}</td>
             <td><button class="btn btn-soft btn-sm" type="button" data-action="detail" data-id="${escapeHTML(article.id)}">查看</button></td>
           </tr>`).join('')}</tbody>
@@ -2692,9 +2986,21 @@ tbody tr:last-child td { border-bottom: 0; }
         $$('[data-action="clear-filters"]').forEach(btn => btn.addEventListener('click', clearFilters));
       }
 
+      function isCollaborationChannel() {
+        return elements.channelInput?.value === '共同创作';
+      }
+
+      function visibleAuthorInputsHaveValues() {
+        return [1, 2, 3].some(index =>
+          $(`#author${index}Input`)?.value.trim() || $(`#author${index}SpecialtyInput`)?.value.trim()
+        );
+      }
+
       function setAuthorCount(value) {
-        const count = Math.max(1, Math.min(3, Number(value) || 1));
-        const select = $('#authorCountInput');
+        const collaboration = isCollaborationChannel();
+        const minimum = collaboration ? 0 : 1;
+        const count = Math.max(minimum, Math.min(3, Number(value) || 0));
+        const select = elements.authorCountInput;
         if (select) select.value = String(count);
         $$('[data-author-slot]').forEach(slot => {
           const visible = Number(slot.dataset.authorSlot) <= count;
@@ -2702,8 +3008,58 @@ tbody tr:last-child td { border-bottom: 0; }
           $$('input, select', slot).forEach(control => {
             control.disabled = !visible;
             if (control.hasAttribute('data-author-required')) control.required = visible;
+            if (!visible) control.setCustomValidity('');
           });
         });
+      }
+
+      function updateAuthorPolicy(options = {}) {
+        const collaboration = isCollaborationChannel();
+        elements.authorBuilder?.classList.toggle('is-optional', collaboration);
+        if (elements.authorRequirementNote) {
+          elements.authorRequirementNote.textContent = collaboration
+            ? '共同创作由其他专业发布，作者信息可不登记；需要留存作者时，可选择 1–3 位并填写姓名及专业。'
+            : '当前宣传接口必须至少登记第一作者，并为每位作者选择所属专业。';
+        }
+        if (elements.authorCountZeroOption) {
+          elements.authorCountZeroOption.hidden = !collaboration;
+          elements.authorCountZeroOption.disabled = !collaboration;
+        }
+        let count = Number(elements.authorCountInput?.value) || 0;
+        if (!collaboration && count < 1) count = 1;
+        if (collaboration && options.autoZeroIfEmpty && !visibleAuthorInputsHaveValues()) count = 0;
+        setAuthorCount(count);
+      }
+
+      function validateAuthorPolicy() {
+        const collaboration = isCollaborationChannel();
+        const count = Math.max(0, Math.min(3, Number(elements.authorCountInput?.value) || 0));
+        if (!collaboration && count < 1) {
+          setAuthorCount(1);
+          toast('除共同创作外，必须至少登记第一作者', true);
+          return false;
+        }
+        for (let index = 1; index <= count; index += 1) {
+          const nameInput = $(`#author${index}Input`);
+          const specialtyInput = $(`#author${index}SpecialtyInput`);
+          const nameMissing = !nameInput.value.trim();
+          const specialtyMissing = !specialtyInput.value.trim();
+          nameInput.setCustomValidity(nameMissing ? `请填写第${index}作者姓名` : '');
+          specialtyInput.setCustomValidity(specialtyMissing ? `请选择第${index}作者所属专业` : '');
+          if (nameMissing || specialtyMissing) {
+            (nameMissing ? nameInput : specialtyInput).reportValidity();
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function articleAuthorPolicyError(article = {}) {
+        const authors = articleAuthors(article);
+        if (article.channel !== '共同创作' && !authors.length) return '非共同创作稿件必须至少填写第一作者';
+        const incomplete = authors.find(author => !author.name || !author.specialty);
+        if (incomplete) return '已填写的每位作者都必须同时填写姓名和所属专业';
+        return '';
       }
 
       function openEdit(id = '') {
@@ -2713,7 +3069,7 @@ tbody tr:last-child td { border-bottom: 0; }
         $('#articleId').value = article?.id || '';
         $('#titleInput').value = article?.title || '';
         $('#dateInput').value = article?.date || new Date().toISOString().slice(0, 10);
-        $('#channelInput').value = article?.channel || '智绘岚图';
+        elements.channelInput.value = article?.channel || '智绘岚图';
         $('#topicInput').value = article?.topic || '';
         $('#statusInput').value = article?.status || '已发布';
         const authors = article ? articleAuthors(article) : [];
@@ -2722,7 +3078,8 @@ tbody tr:last-child td { border-bottom: 0; }
           $(`#author${index + 1}Input`).value = author.name || '';
           $(`#author${index + 1}SpecialtyInput`).value = author.specialty || '';
         }
-        setAuthorCount(Math.max(1, authors.length));
+        updateAuthorPolicy({ autoZeroIfEmpty: false });
+        setAuthorCount(article?.channel === '共同创作' && authors.length === 0 ? 0 : Math.max(1, authors.length));
         $('#summaryInput').value = article?.summary || '';
         $('#keywordsInput').value = (article?.keywords || []).join('，');
         $('#linkInput').value = article?.link || '';
@@ -2749,6 +3106,7 @@ tbody tr:last-child td { border-bottom: 0; }
             <div class="detail-meta-item"><span>主题分类</span><strong>${escapeHTML(article.topic || '待补充')}</strong></div>
             ${authorDetailMarkup(article)}
             <div class="detail-meta-item"><span>关键词</span><strong>${escapeHTML((article.keywords || []).join('、') || '待补充')}</strong></div>
+            <div class="detail-meta-item"><span>阅读量</span><strong>${escapeHTML(readMetricLabel(article))}</strong><small>更新于 ${escapeHTML(formatMetricTime(article.metricsUpdatedAt))}</small></div>
             <div class="detail-meta-item"><span>资料链接</span><strong>${article.link ? (url ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">打开链接 ↗</a>` : escapeHTML(article.link)) : '待补充'}</strong></div>
           </div>
           <h3 style="font-size:14px;margin:0 0 8px">稿件摘要</h3>
@@ -2809,7 +3167,8 @@ tbody tr:last-child td { border-bottom: 0; }
 
       function collectFormData() {
         const existing = state.articles.find(a => a.id === $('#articleId').value);
-        const authorCount = Math.max(1, Math.min(3, Number($('#authorCountInput').value) || 1));
+        if (!validateAuthorPolicy()) throw new Error('作者信息未填写完整');
+        const authorCount = Math.max(0, Math.min(3, Number(elements.authorCountInput.value) || 0));
         const authors = Array.from({ length: authorCount }, (_, index) => ({
           name: $(`#author${index + 1}Input`).value.trim(),
           specialty: $(`#author${index + 1}SpecialtyInput`).value.trim()
@@ -2818,7 +3177,7 @@ tbody tr:last-child td { border-bottom: 0; }
           id: $('#articleId').value || createId(),
           title: $('#titleInput').value,
           date: $('#dateInput').value,
-          channel: $('#channelInput').value,
+          channel: elements.channelInput.value,
           topic: $('#topicInput').value,
           status: $('#statusInput').value,
           authors,
@@ -2838,7 +3197,7 @@ tbody tr:last-child td { border-bottom: 0; }
       }
 
       function exportCsv() {
-        const headers = ['稿件标题','发布日期','宣传栏目','主题分类','发布状态','第一作者','第一作者专业','第二作者','第二作者专业','第三作者','第三作者专业','稿件摘要','关键词','稿件链接','备注','重点稿件'];
+        const headers = ['稿件标题','发布日期','宣传栏目','主题分类','发布状态','第一作者','第一作者专业','第二作者','第二作者专业','第三作者','第三作者专业','稿件摘要','关键词','稿件链接','阅读量','阅读量更新时间','备注','重点稿件'];
         const rows = state.articles.map(article => {
           const authors = articleAuthors(article);
           return [
@@ -2846,7 +3205,7 @@ tbody tr:last-child td { border-bottom: 0; }
             authors[0]?.name || '', authors[0]?.specialty || '',
             authors[1]?.name || '', authors[1]?.specialty || '',
             authors[2]?.name || '', authors[2]?.specialty || '',
-            article.summary, (article.keywords || []).join('，'), article.link, article.notes, article.featured ? '是' : '否'
+            article.summary, (article.keywords || []).join('，'), article.link, article.readCount ?? '', article.metricsUpdatedAt || '', article.notes, article.featured ? '是' : '否'
           ];
         });
         const csv = [headers, ...rows].map(row => row.map(csvEscape).join(',')).join('\r\n');
@@ -2860,7 +3219,7 @@ tbody tr:last-child td { border-bottom: 0; }
           ['请替换为真实稿件标题','2026-08-25','智绘岚图','技术创新','已发布','第一作者','性能集成','','','','','请填写真实稿件摘要','创新，项目成果','','示例行，导入前可删除','否'],
           ['请替换为真实稿件标题','2026-08-25','其余对外宣传接口','品牌传播','待发布','第一作者','性能集成-热管理','第二作者','性能集成-空气动力学','','','请填写真实稿件摘要','外部传播，品牌','','示例行，导入前可删除','否'],
           ['请替换为真实稿件标题','2026-08-25','岚图家园','团队风采','草稿','第一作者','性能集成-重量管理','第二作者','性能集成-动力经济性','第三作者','性能集成','请填写真实稿件摘要','团队，企业文化','','示例行，导入前可删除','否'],
-          ['请替换为真实稿件标题','2026-08-25','共同创作','协同创新','待发布','第一作者','性能集成','第二作者','性能集成-热管理','','','其他专业发布，我们共同参与撰稿','共同创作，跨专业协同','','示例行，导入前可删除','否']
+          ['请替换为真实稿件标题','2026-08-25','共同创作','协同创新','待发布','','','','','','','其他专业发布，我们共同参与撰稿','共同创作，跨专业协同','','示例行，作者信息可留空','否']
         ];
         const csv = [headers, ...examples].map(row => row.map(csvEscape).join(',')).join('\r\n');
         downloadBlob('\uFEFF' + csv, '岚图宣传稿导入模板.csv', 'text/csv;charset=utf-8');
@@ -2905,6 +3264,13 @@ tbody tr:last-child td { border-bottom: 0; }
           if (!Array.isArray(imported)) throw new Error('未识别到稿件数组');
           const normalized = imported.map(normalizeArticle).filter(a => a.title && !/^请替换为真实稿件标题$/.test(a.title));
           if (!normalized.length) throw new Error('没有可导入的有效稿件');
+          const invalidAuthorRows = normalized
+            .map((article, index) => ({ article, index, error: articleAuthorPolicyError(article) }))
+            .filter(item => item.error);
+          if (invalidAuthorRows.length) {
+            const sample = invalidAuthorRows.slice(0, 3).map(item => `第 ${item.index + 1} 条《${item.article.title}》：${item.error}`).join('；');
+            throw new Error(`作者信息校验未通过：${sample}${invalidAuthorRows.length > 3 ? '；其余错误请一并检查' : ''}`);
+          }
 
           const replace = state.articles.length
             ? confirm(`检测到 ${normalized.length} 篇有效稿件。\n点击“确定”将清空云端现有稿件后覆盖导入；点击“取消”则合并并按标题、日期、栏目自动去重。`)
@@ -3045,11 +3411,18 @@ tbody tr:last-child td { border-bottom: 0; }
         }
       });
 
-      $('#authorCountInput').addEventListener('change', event => setAuthorCount(event.target.value));
+      elements.authorCountInput.addEventListener('change', event => setAuthorCount(event.target.value));
+      elements.channelInput.addEventListener('change', () => updateAuthorPolicy({ autoZeroIfEmpty: true }));
+      updateAuthorPolicy({ autoZeroIfEmpty: false });
       setAuthorCount(1);
+      [1, 2, 3].forEach(index => {
+        $(`#author${index}Input`).addEventListener('input', event => event.target.setCustomValidity(''));
+        $(`#author${index}SpecialtyInput`).addEventListener('change', event => event.target.setCustomValidity(''));
+      });
       elements.articleForm.addEventListener('submit', async event => {
         event.preventDefault();
         if (!requireEditor()) return;
+        if (!validateAuthorPolicy()) return;
         const submitButton = event.submitter || $('button[type="submit"]', elements.articleForm);
         submitButton.disabled = true;
         const originalText = submitButton.textContent;
@@ -3167,6 +3540,5 @@ tbody tr:last-child td { border-bottom: 0; }
       initApplication();
     })();
   </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
 </body>
 </html>
