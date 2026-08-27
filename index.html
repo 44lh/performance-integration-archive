@@ -1937,7 +1937,25 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
   .channel-list { grid-template-columns: 1fr; }
   .sidebar .privacy-note { grid-column: auto; }
   .cards-grid { grid-template-columns: 1fr; }
-  .article-card { min-height: 304px; }
+  .article-card { min-height: 322px; }
+  /* 手机端标题最多显示三行：使用与三行行高完全一致的固定区域，避免第三行被裁掉半截。 */
+  .article-content {
+    grid-template-rows: 76px 62px 30px;
+    min-height: 188px;
+  }
+  .article-title {
+    height: 76px;
+    font-size: 17px;
+    line-height: 1.48;
+  }
+  .article-title-button {
+    max-height: 4.44em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
   .form-grid { grid-template-columns: 1fr; }
   .form-field.full { grid-column: auto; }
   .author-slot { grid-template-columns: 1fr 1fr; }
@@ -1978,6 +1996,21 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
   .toolbar-actions { width: 100%; }
   .toolbar-actions .control { flex: 1 1 130px; }
   .segmented { margin-left: auto; }
+  /* 更窄手机上略微缩小标题字号，仍严格保留完整三行，并在第三行末尾显示省略号。 */
+  .article-content {
+    grid-template-rows: 72px 62px 30px;
+    min-height: 184px;
+  }
+  .article-title {
+    height: 72px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .article-title-button {
+    max-height: 4.5em;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
   .empty-state { min-height: 360px; padding: 58px 20px 50px; }
   .detail-meta { grid-template-columns: 1fr; }
   .modal-backdrop { padding: 9px; }
@@ -2008,7 +2041,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
 }
 
   </style>
-  <!-- v14：参考版布局 + 主题/关键词柔和多色标签体系 -->
+  <!-- v16：移动端卡片标题三行完整截断并在末行显示省略号 -->
 </head>
 <body>
   <noscript><div style="margin:16px;padding:14px;border:1px solid #f0c36d;border-radius:12px;background:#fff8e6;color:#7a5200;font-family:Microsoft YaHei,Arial,sans-serif">当前预览环境未执行 JavaScript，因此只能显示静态页面。请下载后用浏览器打开，或发布到飞书妙搭。</div></noscript>
