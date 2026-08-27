@@ -2034,13 +2034,13 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
               <span aria-hidden="true">⇅</span><span class="label-text">数据管理</span>
             </button>
             <div class="dropdown" id="dataDropdown">
-              <label class="requires-editor" for="importFile"><span>↥</span> 导入 JSON / CSV 到云端<input id="importFile" type="file" accept=".json,.csv,application/json,text/csv" /></label>
+              <label class="requires-editor hidden" for="importFile"><span>↥</span> 导入 JSON / CSV 到云端<input id="importFile" type="file" accept=".json,.csv,application/json,text/csv" /></label>
               <button type="button" id="refreshCloudBtn"><span>↻</span> 刷新云端数据</button>
-              <button type="button" id="exportJsonBtn"><span>⌁</span> 导出 JSON 备份</button>
-              <button type="button" id="exportCsvBtn"><span>▤</span> 导出 CSV 表格</button>
-              <button type="button" id="downloadTemplateBtn"><span>↓</span> 下载 CSV 模板</button>
-              <div class="divider requires-editor"></div>
-              <button class="requires-editor" type="button" id="resetDataBtn"><span>↺</span> 清空云端数据</button>
+              <button class="requires-editor hidden" type="button" id="exportJsonBtn"><span>⌁</span> 导出 JSON 备份</button>
+              <button class="requires-editor hidden" type="button" id="exportCsvBtn"><span>▤</span> 导出 CSV 表格</button>
+              <button class="requires-editor hidden" type="button" id="downloadTemplateBtn"><span>↓</span> 下载 CSV 模板</button>
+              <div class="divider requires-editor hidden"></div>
+              <button class="requires-editor hidden" type="button" id="resetDataBtn"><span>↺</span> 清空云端数据</button>
             </div>
           </div>
           <button class="btn btn-primary" id="addArticleBtn" disabled title="编辑人员登录后可新增稿件"><span aria-hidden="true">＋</span>新增稿件</button>
@@ -2546,7 +2546,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
           ${errorText ? `<div class="cloud-error-code">${escapeHTML(errorText)}</div>` : ''}
           <div class="empty-actions">
             ${action ? `<button class="btn btn-primary" type="button" data-action="${escapeHTML(action)}">重新连接</button>` : ''}
-            <button class="btn btn-light" type="button" data-action="template">下载导入模板</button>
+            ${isEditor() ? '<button class="btn btn-light" type="button" data-action="template">下载导入模板</button>' : ''}
           </div>
         </div>`;
         bindDynamicEvents();
@@ -3153,7 +3153,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
           ? '<button class="btn btn-light" type="button" data-action="clear-filters">重置筛选</button>'
           : isEditor()
             ? '<button class="btn btn-primary" type="button" data-action="add">＋ 新增第一篇</button><button class="btn btn-light" type="button" data-action="template">下载导入模板</button>'
-            : '<button class="btn btn-primary" type="button" data-action="login">编辑人员登录</button><button class="btn btn-light" type="button" data-action="template">下载导入模板</button>';
+            : '<button class="btn btn-primary" type="button" data-action="login">编辑人员登录</button>';
         return `<div class="empty-state">
           <div class="empty-illustration" aria-hidden="true"></div>
           <h2>${filtered ? '没有找到匹配稿件' : '云端暂未收录稿件'}</h2>
@@ -3489,11 +3489,13 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
       }
 
       function exportJson() {
+        if (!requireEditor('只有登录的管理员用户可以导出 JSON 备份')) return;
         downloadBlob(JSON.stringify(state.articles, null, 2), `岚图宣传稿备份_${dateStamp()}.json`, 'application/json;charset=utf-8');
         toast('JSON 备份已导出');
       }
 
       function exportCsv() {
+        if (!requireEditor('只有登录的管理员用户可以导出 CSV 表格')) return;
         const headers = ['稿件标题','发布日期','宣传栏目','主题分类','发布状态','第一作者','第一作者专业','第二作者','第二作者专业','第三作者','第三作者专业','稿件摘要','关键词','稿件链接','阅读量','阅读量更新时间','备注','重点稿件'];
         const rows = state.articles.map(article => {
           const authors = articleAuthors(article);
@@ -3511,6 +3513,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
       }
 
       function downloadTemplate() {
+        if (!requireEditor('只有登录的管理员用户可以下载 CSV 模板')) return;
         const headers = ['稿件标题','发布日期','宣传栏目','主题分类','发布状态','第一作者','第一作者专业','第二作者','第二作者专业','第三作者','第三作者专业','稿件摘要','关键词','稿件链接','备注','重点稿件'];
         const examples = [
           ['请替换为真实稿件标题','2026-08-25','智绘岚图','技术创新','已发布','第一作者','性能集成','','','','','请填写真实稿件摘要','创新，项目成果','','示例行，导入前可删除','否'],
