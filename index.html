@@ -1145,10 +1145,9 @@ textarea.control { min-height: 112px; height: auto; padding-top: 10px; padding-b
 }
 .article-title-button {
   width: 100%;
-  max-height: 58px;
   border: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   color: inherit;
   background: transparent;
   text-align: left;
@@ -1158,9 +1157,29 @@ textarea.control { min-height: 112px; height: auto; padding-top: 10px; padding-b
   letter-spacing: inherit;
   cursor: pointer;
   transition: color .18s ease;
+  display: block;
+}
+.article-title-text {
+  width: 100%;
+  overflow: hidden;
+  color: inherit;
+  line-height: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+/* 手机浏览器对多行省略号支持不一致。JS 兜底时改为普通块级文本，并主动写入“…”字符。 */
+.article-title-text.is-measuring,
+.article-title-text.is-js-clamped {
+  display: block;
+  -webkit-box-orient: initial;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: hidden;
 }
 .article-title-button:hover { color: var(--brand-700); }
 .article-title-button:focus-visible { outline: none; color: var(--brand-700); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
@@ -1948,13 +1967,12 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
     font-size: 17px;
     line-height: 1.48;
   }
-  .article-title-button {
-    max-height: 4.44em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: anywhere;
+  .article-title-button { overflow: visible; }
+  .article-title-text {
     -webkit-line-clamp: 3;
     line-clamp: 3;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
   .form-grid { grid-template-columns: 1fr; }
   .form-field.full { grid-column: auto; }
@@ -2006,8 +2024,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
     font-size: 16px;
     line-height: 1.5;
   }
-  .article-title-button {
-    max-height: 4.5em;
+  .article-title-text {
     -webkit-line-clamp: 3;
     line-clamp: 3;
   }
@@ -3132,6 +3149,72 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         });
       }
 
+      let mobileTitleClampFrame = 0;
+
+      function scheduleMobileTitleClamp() {
+        window.cancelAnimationFrame(mobileTitleClampFrame);
+        mobileTitleClampFrame = window.requestAnimationFrame(() => {
+          mobileTitleClampFrame = window.requestAnimationFrame(applyMobileTitleClamp);
+        });
+      }
+
+      function applyMobileTitleClamp() {
+        const mobile = window.matchMedia('(max-width: 720px)').matches;
+        $$('.article-title-button').forEach(button => {
+          const textNode = $('.article-title-text', button);
+          if (!textNode) return;
+
+          const originalTitle = String(button.dataset.fullTitle || textNode.textContent || '').trim();
+          button.dataset.fullTitle = originalTitle;
+          button.setAttribute('aria-label', originalTitle);
+          button.title = originalTitle;
+
+          textNode.classList.remove('is-measuring', 'is-js-clamped');
+          textNode.style.maxHeight = '';
+          textNode.textContent = originalTitle;
+
+          // 桌面端继续使用 CSS 两行省略；手机端才启用精确三行 JS 兜底。
+          if (!mobile || !originalTitle) return;
+
+          textNode.classList.add('is-measuring');
+          const computed = window.getComputedStyle(textNode);
+          const fontSize = Number.parseFloat(computed.fontSize) || 16;
+          const lineHeight = Number.parseFloat(computed.lineHeight) || fontSize * 1.5;
+          const maxHeight = lineHeight * 3 + 1;
+
+          // 未超过三行时保留完整标题，不人为添加省略号。
+          if (textNode.scrollHeight <= maxHeight) {
+            textNode.classList.remove('is-measuring');
+            return;
+          }
+
+          const characters = Array.from(originalTitle);
+          const trimTail = value => value.replace(/[\s，。！？、；：,.!?;:]+$/u, '');
+          let low = 0;
+          let high = characters.length;
+
+          // 二分查找能放进三行的最长文本，再显式追加“…”；不再依赖手机浏览器绘制省略号。
+          while (low < high) {
+            const middle = Math.ceil((low + high) / 2);
+            const candidate = trimTail(characters.slice(0, middle).join(''));
+            textNode.textContent = `${candidate}…`;
+            if (textNode.scrollHeight <= maxHeight) low = middle;
+            else high = middle - 1;
+          }
+
+          let fitted = trimTail(characters.slice(0, low).join(''));
+          textNode.textContent = `${fitted}…`;
+          while (fitted && textNode.scrollHeight > maxHeight) {
+            fitted = trimTail(Array.from(fitted).slice(0, -1).join(''));
+            textNode.textContent = `${fitted}…`;
+          }
+
+          textNode.classList.remove('is-measuring');
+          textNode.classList.add('is-js-clamped');
+          textNode.style.maxHeight = `${maxHeight}px`;
+        });
+      }
+
       function renderResults() {
         if (state.loading) {
           elements.resultArea.innerHTML = `<div class="empty-state"><div class="empty-illustration" aria-hidden="true"></div><h2>正在连接宣传稿云端数据库</h2><p>正在读取所有访问者共享的稿件数据，请稍候。</p></div>`;
@@ -3155,6 +3238,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
 
         elements.resultArea.innerHTML = state.view === 'table' ? tableMarkup(list) : cardsMarkup(list);
         bindDynamicEvents();
+        scheduleMobileTitleClamp();
       }
 
       function activeFilterSummary() {
@@ -3233,7 +3317,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
               <time class="article-date" datetime="${escapeHTML(article.date)}">${escapeHTML(formatDate(article.date))}</time>
             </div>
             <div class="article-content">
-              <h3 class="article-title"><button class="article-title-button" type="button" data-action="detail" data-id="${escapeHTML(article.id)}">${escapeHTML(article.title)}</button></h3>
+              <h3 class="article-title"><button class="article-title-button" type="button" data-action="detail" data-id="${escapeHTML(article.id)}" data-full-title="${escapeHTML(article.title)}" aria-label="${escapeHTML(article.title)}"><span class="article-title-text">${escapeHTML(article.title)}</span></button></h3>
               <div class="article-summary-slot">${article.summary ? `<p class="article-summary">${escapeHTML(article.summary)}</p>` : ''}</div>
               <div class="article-tags">${tags.map((tag, index) => {
                 if (index === 0) {
@@ -3796,9 +3880,15 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
       let channelCardResizeTimer = null;
       window.addEventListener('resize', () => {
         window.clearTimeout(channelCardResizeTimer);
-        channelCardResizeTimer = window.setTimeout(syncChannelCardHeights, 120);
+        channelCardResizeTimer = window.setTimeout(() => {
+          syncChannelCardHeights();
+          scheduleMobileTitleClamp();
+        }, 120);
       });
-      document.fonts?.ready.then(syncChannelCardHeights).catch(() => {});
+      document.fonts?.ready.then(() => {
+        syncChannelCardHeights();
+        scheduleMobileTitleClamp();
+      }).catch(() => {});
 
       elements.channelCardList?.addEventListener('click', event => {
         const button = event.target.closest('[data-channel-card]');
