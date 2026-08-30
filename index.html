@@ -1448,6 +1448,85 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
   box-shadow: 0 7px 16px rgba(10, 133, 134, .13);
 }
 
+
+/* 分页规则：卡片视图每页严格 6 篇；表格视图每页严格 9 篇。 */
+.cards-grid > .article-card:nth-child(n + 7) {
+  display: none;
+}
+
+.pagination-shell {
+  margin-top: 18px;
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,.97);
+  box-shadow: var(--shadow-sm);
+}
+.pagination-shell.hidden { display: none !important; }
+.pagination-meta {
+  color: var(--ink-600);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+.pagination-meta strong {
+  color: var(--ink-900);
+  font-size: 11.5px;
+  font-weight: 830;
+}
+.pagination-size {
+  color: var(--ink-500);
+  font-size: 10px;
+  text-align: right;
+  white-space: nowrap;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.page-button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--ink-700);
+  background: #fff;
+  font-size: 10.5px;
+  font-weight: 760;
+  transition: color .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.page-button:hover:not(:disabled) {
+  color: var(--brand-700);
+  border-color: #9ed6d2;
+  background: var(--brand-50);
+  transform: translateY(-1px);
+}
+.page-button.active,
+.page-button[aria-current="page"] {
+  color: #fff !important;
+  border-color: var(--brand-650) !important;
+  background: var(--brand-650) !important;
+  box-shadow: 0 5px 12px rgba(10,133,134,.18);
+}
+.page-button:disabled {
+  cursor: not-allowed;
+  opacity: .42;
+  transform: none;
+}
+.page-ellipsis {
+  min-width: 20px;
+  color: var(--ink-400);
+  text-align: center;
+  font-size: 12px;
+}
+
 .empty-state {
   position: relative;
   overflow: hidden;
@@ -2040,6 +2119,16 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
   .author-slot-label { grid-column: auto; }
 }
 
+@media (max-width: 720px) {
+  .pagination-shell {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    padding: 12px;
+  }
+  .pagination-size { text-align: center; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -2058,7 +2147,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
 }
 
   </style>
-  <!-- v16：移动端卡片标题三行完整截断并在末行显示省略号 -->
+  <!-- v20：卡片视图每页严格 6 篇，表格视图每页严格 9 篇，并在结果区底部显示分页导航 -->
 </head>
 <body>
   <noscript><div style="margin:16px;padding:14px;border:1px solid #f0c36d;border-radius:12px;background:#fff8e6;color:#7a5200;font-family:Microsoft YaHei,Arial,sans-serif">当前预览环境未执行 JavaScript，因此只能显示静态页面。请下载后用浏览器打开，或发布到飞书妙搭。</div></noscript>
@@ -2296,6 +2385,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
             <p>若此提示长时间不消失，说明当前预览环境限制了 JavaScript 或浏览器存储；可下载后用浏览器打开，或改用飞书妙搭发布。</p>
           </div>
         </section>
+        <nav class="pagination-shell hidden" id="pagination" aria-label="稿件分页"></nav>
       </div>
     </section>
 
@@ -2511,6 +2601,8 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
 
 
       const VIEW_KEY = 'lantu-publicity-view-v1';
+      const CARD_PAGE_SIZE = 6;
+      const TABLE_PAGE_SIZE = 9;
       const CLOUD_TABLE = 'publicity_articles';
       const CHANNELS = Object.freeze([
         { name: '智绘岚图', className: '', color: '#19aaa5' },
@@ -2538,6 +2630,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         articles: [],
         view: safeLocalStorage.get(VIEW_KEY) || 'grid',
         filters: { search: '', year: '', channel: '', topic: '', status: '', sort: 'date-desc' },
+        page: 1,
         activeDetailId: null,
         client: null,
         session: null,
@@ -2556,7 +2649,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         readScopeYear: $('#readScopeYear'), readTotal: $('#readTotal'), readExternal: $('#readExternal'), readInternal: $('#readInternal'), readCoverage: $('#readCoverage'), readExternalBar: $('#readExternalBar'), readInternalBar: $('#readInternalBar'), readScopeText: $('#readScopeText'),
         syncTime: $('#syncTime'), cloudState: $('#cloudState'), yearNav: $('#yearNav'), searchInput: $('#searchInput'), yearFilter: $('#yearFilter'), channelFilter: $('#channelFilter'),
         topicFilter: $('#topicFilter'), statusFilter: $('#statusFilter'), sortSelect: $('#sortSelect'), resultCount: $('#resultCount'),
-        activeFilterText: $('#activeFilterText'), resultArea: $('#resultArea'), gridViewBtn: $('#gridViewBtn'), tableViewBtn: $('#tableViewBtn'),
+        activeFilterText: $('#activeFilterText'), resultArea: $('#resultArea'), pagination: $('#pagination'), gridViewBtn: $('#gridViewBtn'), tableViewBtn: $('#tableViewBtn'),
         editModal: $('#editModal'), authModal: $('#authModal'), detailModal: $('#detailModal'), articleForm: $('#articleForm'), authForm: $('#authForm'),
         authBtn: $('#authBtn'), addArticleBtn: $('#addArticleBtn'), dataMenuBtn: $('#dataMenuBtn'), dataDropdown: $('#dataDropdown'), importFile: $('#importFile'),
         channelCardList: $('#channelCardList'), articleLibrary: $('#articleLibrary'),
@@ -3214,28 +3307,102 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         });
       }
 
+      function currentPageSize() {
+        return state.view === 'table' ? TABLE_PAGE_SIZE : CARD_PAGE_SIZE;
+      }
+
+      function paginationItems(currentPage, totalPages) {
+        if (totalPages <= 7) return Array.from({ length: totalPages }, (_, index) => index + 1);
+        const items = [1];
+        const startPage = Math.max(2, currentPage - 1);
+        const endPage = Math.min(totalPages - 1, currentPage + 1);
+        if (startPage > 2) items.push('ellipsis-start');
+        for (let page = startPage; page <= endPage; page += 1) items.push(page);
+        if (endPage < totalPages - 1) items.push('ellipsis-end');
+        items.push(totalPages);
+        return items;
+      }
+
+      function hidePagination() {
+        if (!elements.pagination) return;
+        elements.pagination.classList.add('hidden');
+        elements.pagination.innerHTML = '';
+      }
+
+      function renderPagination(totalItems, visibleItems, pageSize, totalPages) {
+        if (!elements.pagination || totalItems <= 0) {
+          hidePagination();
+          return;
+        }
+
+        const firstItem = (state.page - 1) * pageSize + 1;
+        const lastItem = firstItem + visibleItems - 1;
+        const buttons = paginationItems(state.page, totalPages).map(item => {
+          if (typeof item !== 'number') return '<span class="page-ellipsis" aria-hidden="true">…</span>';
+          const active = item === state.page;
+          return `<button class="page-button ${active ? 'active' : ''}" type="button" data-page="${item}" aria-label="第 ${item} 页" ${active ? 'aria-current="page"' : ''}>${item}</button>`;
+        }).join('');
+
+        elements.pagination.classList.remove('hidden');
+        elements.pagination.innerHTML = `
+          <div class="pagination-meta">当前显示 <strong>${firstItem}–${lastItem}</strong> / ${totalItems} 篇</div>
+          <div class="pagination-controls">
+            <button class="page-button" type="button" data-page="prev" ${state.page === 1 ? 'disabled' : ''}>上一页</button>
+            ${buttons}
+            <button class="page-button" type="button" data-page="next" ${state.page === totalPages ? 'disabled' : ''}>下一页</button>
+          </div>
+          <div class="pagination-size">第 ${state.page} / ${totalPages} 页 · 每页 ${pageSize} 篇</div>`;
+      }
+
+      function changePage(target) {
+        const pageSize = currentPageSize();
+        const totalPages = Math.max(1, Math.ceil(filteredArticles().length / pageSize));
+        if (target === 'prev') state.page = Math.max(1, state.page - 1);
+        else if (target === 'next') state.page = Math.min(totalPages, state.page + 1);
+        else state.page = Math.min(totalPages, Math.max(1, Number(target) || 1));
+        renderResults();
+        window.requestAnimationFrame(() => elements.resultArea?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      }
+
       function renderResults() {
         if (state.loading) {
+          hidePagination();
           elements.resultArea.innerHTML = `<div class="empty-state"><div class="empty-illustration" aria-hidden="true"></div><h2>正在连接宣传稿云端数据库</h2><p>正在读取所有访问者共享的稿件数据，请稍候。</p></div>`;
           return;
         }
-        if (!state.cloudReady) return;
+        if (!state.cloudReady) {
+          hidePagination();
+          return;
+        }
+
         const list = filteredArticles();
+        const pageSize = currentPageSize();
+        const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+        state.page = Math.min(totalPages, Math.max(1, state.page));
+        const startIndex = (state.page - 1) * pageSize;
+        const currentPageArticles = list.slice(startIndex, startIndex + pageSize);
+
         elements.resultCount.textContent = list.length;
         elements.activeFilterText.textContent = activeFilterSummary();
 
         if (!state.articles.length) {
+          hidePagination();
           elements.resultArea.innerHTML = emptyStateMarkup(false);
           bindDynamicEvents();
           return;
         }
         if (!list.length) {
+          hidePagination();
           elements.resultArea.innerHTML = emptyStateMarkup(true);
           bindDynamicEvents();
           return;
         }
 
-        elements.resultArea.innerHTML = state.view === 'table' ? tableMarkup(list) : cardsMarkup(list);
+        // 这里始终只把当前页数据传入模板：卡片最多 6 篇，表格最多 9 篇。
+        elements.resultArea.innerHTML = state.view === 'table'
+          ? tableMarkup(currentPageArticles)
+          : cardsMarkup(currentPageArticles);
+        renderPagination(list.length, currentPageArticles.length, pageSize, totalPages);
         bindDynamicEvents();
         scheduleMobileTitleClamp();
       }
@@ -3396,6 +3563,9 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         $$('[data-action="retry-cloud"]').forEach(btn => btn.addEventListener('click', initApplication));
         $$('[data-action="template"]').forEach(btn => btn.addEventListener('click', downloadTemplate));
         $$('[data-action="clear-filters"]').forEach(btn => btn.addEventListener('click', clearFilters));
+        $$('[data-page]').forEach(btn => btn.addEventListener('click', () => {
+          if (!btn.disabled) changePage(btn.dataset.page);
+        }));
       }
 
       function isCollaborationChannel() {
@@ -3569,6 +3739,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
       }
 
       function clearFilters() {
+        state.page = 1;
         state.filters = { ...state.filters, search: '', year: '', channel: '', topic: '', status: '' };
         elements.searchInput.value = '';
         elements.yearFilter.value = '';
@@ -3867,6 +4038,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         if (!button) return;
         const year = button.dataset.dashboardYear || '';
         state.filters.year = state.filters.year === year ? '' : year;
+        state.page = 1;
         renderAll();
       });
       elements.mediaDashboard.addEventListener('click', event => {
@@ -3874,6 +4046,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         if (!button) return;
         const channel = button.dataset.dashboardChannel || '';
         state.filters.channel = state.filters.channel === channel ? '' : channel;
+        state.page = 1;
         renderAll();
       });
       let channelCardResizeTimer = null;
@@ -3893,6 +4066,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
         const button = event.target.closest('[data-channel-card]');
         if (!button) return;
         state.filters.channel = button.dataset.channelCard || '';
+        state.page = 1;
         renderAll();
         requestAnimationFrame(() => {
           elements.articleLibrary?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3901,26 +4075,28 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
       elements.dashboardResetBtn.addEventListener('click', () => {
         state.filters.year = '';
         state.filters.channel = '';
+        state.page = 1;
         renderAll();
       });
 
-      elements.searchInput.addEventListener('input', event => { state.filters.search = event.target.value; renderResults(); });
-      elements.yearFilter.addEventListener('change', event => { state.filters.year = event.target.value; renderAll(); });
-      elements.channelFilter.addEventListener('change', event => { state.filters.channel = event.target.value; renderAll(); });
-      elements.topicFilter.addEventListener('change', event => { state.filters.topic = event.target.value; renderResults(); });
-      elements.statusFilter.addEventListener('change', event => { state.filters.status = event.target.value; renderResults(); });
-      elements.sortSelect.addEventListener('change', event => { state.filters.sort = event.target.value; renderResults(); });
+      elements.searchInput.addEventListener('input', event => { state.filters.search = event.target.value; state.page = 1; renderResults(); });
+      elements.yearFilter.addEventListener('change', event => { state.filters.year = event.target.value; state.page = 1; renderAll(); });
+      elements.channelFilter.addEventListener('change', event => { state.filters.channel = event.target.value; state.page = 1; renderAll(); });
+      elements.topicFilter.addEventListener('change', event => { state.filters.topic = event.target.value; state.page = 1; renderResults(); });
+      elements.statusFilter.addEventListener('change', event => { state.filters.status = event.target.value; state.page = 1; renderResults(); });
+      elements.sortSelect.addEventListener('change', event => { state.filters.sort = event.target.value; state.page = 1; renderResults(); });
       $('#clearFiltersBtn').addEventListener('click', clearFilters);
 
       elements.yearNav.addEventListener('click', event => {
         const button = event.target.closest('[data-year]');
         if (!button) return;
         state.filters.year = button.dataset.year;
+        state.page = 1;
         renderAll();
       });
 
-      elements.gridViewBtn.addEventListener('click', () => { state.view = 'grid'; safeLocalStorage.set(VIEW_KEY, state.view); updateViewButtons(); renderResults(); });
-      elements.tableViewBtn.addEventListener('click', () => { state.view = 'table'; safeLocalStorage.set(VIEW_KEY, state.view); updateViewButtons(); renderResults(); });
+      elements.gridViewBtn.addEventListener('click', () => { state.view = 'grid'; state.page = 1; safeLocalStorage.set(VIEW_KEY, state.view); updateViewButtons(); renderResults(); });
+      elements.tableViewBtn.addEventListener('click', () => { state.view = 'table'; state.page = 1; safeLocalStorage.set(VIEW_KEY, state.view); updateViewButtons(); renderResults(); });
 
       elements.dataMenuBtn.addEventListener('click', event => {
         event.stopPropagation();
@@ -3963,6 +4139,7 @@ tbody tr:hover .table-action-cell { background: #f2f9f8; }
     })();
   </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v3d52b47920f24c319d37e2661827c42b1787588026925" integrity="sha512-d9sL6GJLXn6fInD1+TVXhTcQOsmxeHfmHAvwGDIxp5TO+uo1fiWW7mHomMj4MLRlCsJDTqXzWLHJFFlPCEIj/A==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v3d52b47920f24c319d37e2661827c42b1787588026925" integrity="sha512-d9sL6GJLXn6fInD1+TVXhTcQOsmxeHfmHAvwGDIxp5TO+uo1fiWW7mHomMj4MLRlCsJDTqXzWLHJFFlPCEIj/A==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e"}' crossorigin="anonymous"></script>
 </body>
 </html>
